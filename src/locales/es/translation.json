@@ -1,0 +1,47 @@
+{
+    "home": {
+        "title": "COOKAi",
+        "subtitle": "Tu genio culinario personal con IA.",
+        "feature1": "Descubre recetas emocionantes",
+        "feature2": "Encuentra comidas con ingredientes que amas",
+        "button": "Empezar a cocinar"
+    },
+    "chat": {
+        "title": "COOKAi",
+        "placeholder": "Pide una receta...",
+        "send": "Enviar",
+        "greeting": "¡Namaste! 🙏 Soy COOKAi, tu chef personal con un amor especial por la cocina india! 🇮🇳 Pídeme una receta de Biryani, Pollo a la Mantequilla o lo que desees.",
+        "specialty_warning": "Solo me especializo en arte culinario y recetas. Por favor pregúntame sobre comida.",
+        "chips": {
+            "random": "Sorprender",
+            "italian": "Italiano",
+            "chinese": "Chino",
+            "indian": "Indio",
+            "mexican": "Mexicano",
+            "japanese": "Japonés"
+        },
+        "chip_responses": {
+            "random": "¡Sorpréndeme!",
+            "italian": "Muéstrame comida italiana",
+            "chinese": "Muéstrame comida china",
+            "indian": "Muéstrame comida india",
+            "mexican": "Muéstrame comida mexicana",
+            "japanese": "Muéstrame comida japonesa"
+        },
+        "search_responses": {
+            "found_local": "¡Ah, excelente elección! Aquí está mi receta especial para {{meal}}:",
+            "found_random": "Aquí tienes un descubrimiento culinario aleatorio para ti.",
+            "found_area": "Aquí tienes un plato popular de {{area}} para ti:",
+            "found_api": "Encontré una gran receta para \"{{query}}\":",
+            "not_found": "No encontré ninguna receta para \"{{query}}\". Solo me especializo en comida y cocina.",
+            "error": "Tengo problemas para conectar con la cocina. Por favor, inténtalo de nuevo más tarde."
+        }
+    },
+    "modal": {
+        "ingredients": "Ingredientes",
+        "instructions": "Instrucciones",
+        "watch_video": "Ver en YouTube",
+        "view_source": "Ver fuente",
+        "close": "Cerrar"
+    }
+}

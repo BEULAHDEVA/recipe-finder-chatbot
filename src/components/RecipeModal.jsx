@@ -1,9 +1,12 @@
 
 import React, { useEffect } from 'react';
 import { X, Youtube, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './RecipeModal.css';
 
 const RecipeModal = ({ recipe, onClose }) => {
+    const { t } = useTranslation();
+
     if (!recipe) return null;
 
     useEffect(() => {
@@ -25,7 +28,7 @@ const RecipeModal = ({ recipe, onClose }) => {
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-container glass-card" onClick={e => e.stopPropagation()}>
-                <button className="close-btn" onClick={onClose}>
+                <button className="close-btn" onClick={onClose} aria-label={t('modal.close')}>
                     <X size={24} />
                 </button>
 
@@ -42,7 +45,7 @@ const RecipeModal = ({ recipe, onClose }) => {
 
                 <div className="modal-content">
                     <div className="ingredients-section">
-                        <h3>Ingredients</h3>
+                        <h3>{t('modal.ingredients')}</h3>
                         <ul className="ingredients-list">
                             {ingredients.map((item, idx) => (
                                 <li key={idx}>
@@ -54,18 +57,18 @@ const RecipeModal = ({ recipe, onClose }) => {
                     </div>
 
                     <div className="instructions-section">
-                        <h3>Instructions</h3>
+                        <h3>{t('modal.instructions')}</h3>
                         <p>{recipe.strInstructions}</p>
 
                         <div className="links">
                             {recipe.strYoutube && (
                                 <a href={recipe.strYoutube} target="_blank" rel="noopener noreferrer" className="link-btn youtube">
-                                    <Youtube size={20} /> Watch Video
+                                    <Youtube size={20} /> {t('modal.watch_video')}
                                 </a>
                             )}
                             {recipe.strSource && (
                                 <a href={recipe.strSource} target="_blank" rel="noopener noreferrer" className="link-btn source">
-                                    <ExternalLink size={18} /> Source
+                                    <ExternalLink size={18} /> {t('modal.view_source')}
                                 </a>
                             )}
                         </div>

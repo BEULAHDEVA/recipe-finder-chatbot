@@ -1,11 +1,17 @@
 
 import React, { useState } from 'react';
-import { ChefHat, ArrowRight, Star, Heart } from 'lucide-react';
+import { ChefHat, ArrowRight, Star, Heart, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './Home.css';
 import Chat from './components/Chat';
 
 const Home = () => {
+    const { t, i18n } = useTranslation();
     const [showChat, setShowChat] = useState(false);
+
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
 
     if (showChat) {
         return <Chat />;
@@ -13,18 +19,35 @@ const Home = () => {
 
     return (
         <div className="home-container">
+            {/* Language Switcher */}
+            <div className="language-switcher">
+                <Globe size={20} color="var(--text-secondary)" />
+                <button
+                    className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+                    onClick={() => changeLanguage('en')}>EN</button>
+                <button
+                    className={`lang-btn ${i18n.language === 'hi' ? 'active' : ''}`}
+                    onClick={() => changeLanguage('hi')}>हिंदी</button>
+                <button
+                    className={`lang-btn ${i18n.language === 'es' ? 'active' : ''}`}
+                    onClick={() => changeLanguage('es')}>ES</button>
+                <button
+                    className={`lang-btn ${i18n.language === 'kn' ? 'active' : ''}`}
+                    onClick={() => changeLanguage('kn')}>ಕೆಎನ್</button>
+            </div>
+
             <div className="hero-content">
-                <h1 className="hero-title animate-fade-in">COOKAi</h1>
-                <p className="hero-subtitle animate-fade-in">Your personal AI culinary genius.</p>
+                <h1 className="hero-title animate-fade-in">{t('home.title')}</h1>
+                <p className="hero-subtitle animate-fade-in">{t('home.subtitle')}</p>
 
                 <div className="features animate-fade-in">
                     <div className="feature-item">
                         <Star color="var(--secondary)" fill="var(--secondary)" size={20} />
-                        <span>Discover exciting new recipes</span>
+                        <span>{t('home.feature1')}</span>
                     </div>
                     <div className="feature-item">
                         <Heart color="var(--primary)" fill="var(--primary)" size={20} />
-                        <span>Find meals with ingredients you love</span>
+                        <span>{t('home.feature2')}</span>
                     </div>
                 </div>
 
@@ -32,7 +55,7 @@ const Home = () => {
                     className="start-btn animate-fade-in"
                     onClick={() => setShowChat(true)}
                 >
-                    Start Cooking <ArrowRight size={20} />
+                    {t('home.button')} <ArrowRight size={20} />
                 </button>
             </div>
 

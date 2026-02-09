@@ -1,18 +1,21 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Utensils, Zap, ChefHat } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Message from './Message';
 import RecipeModal from './RecipeModal';
 import { searchRecipes, getRandomRecipe, getRecipesByArea, getRecipeById } from '../services/api';
-import { popularIndianDishes, knownDishNames, indianGreetings } from '../data/indianRecipes';
+import { popularIndianDishes, knownDishNames } from '../data/indianRecipes';
 import './Chat.css';
 
 const Chat = () => {
-    // Initial State with Warm Indian Greeting
+    const { t } = useTranslation();
+
+    // Initial State
     const [messages, setMessages] = useState([
         {
             id: 1,
-            text: "Namaste! 🙏 I am COOKAi, your personal chef with a special love for Indian cuisine! 🇮🇳 Ask me for a Biryani recipe, Butter Chicken, or anything else you crave.",
+            text: t('chat.greeting'),
             sender: 'bot'
         }
     ]);
@@ -48,7 +51,7 @@ const Chat = () => {
             if (type === 'search' || type === 'indian_priority') {
                 const lowerQuery = query.toLowerCase();
                 localMatch = popularIndianDishes.find(d => {
-                    // Check name match
+                    // Check strict name match
                     if (d.strMeal.toLowerCase().includes(lowerQuery)) return true;
                     if (lowerQuery.includes(d.strMeal.toLowerCase())) return true;
 
@@ -66,74 +69,64 @@ const Chat = () => {
             if (localMatch) {
                 // Found locally!
                 recipe = localMatch;
-                replyText = `Ah, excellent choice! Here is my special recipe for ${recipe.strMeal}:`;
-                addMessage(replyText, 'bot', recipe); // Immediate response
-                return; // Stop here
+                replyText = t('chat.search_responses.found_local', { meal: recipe.strMeal });
+                addMessage(replyText, 'bot', recipe);
+                return;
             }
 
             // If not found locally, manage other types
 
             if (type === 'random') {
-                // Mix of API and Local for Random - bias towards Indian
                 const useLocal = Math.random() > 0.4;
                 if (useLocal) {
                     const randomIdx = Math.floor(Math.random() * popularIndianDishes.length);
                     recipe = popularIndianDishes[randomIdx];
-                    replyText = "Here is a delicious Indian gem for you! 🇮🇳";
+                    replyText = t('chat.search_responses.found_random') + (recipe.strArea === 'Indian' ? " 🇮🇳" : "");
                 } else {
                     recipe = await getRandomRecipe();
                     if (recipe) {
-                        replyText = "Here is a random culinary discovery for you.";
+                        replyText = t('chat.search_responses.found_random');
                     } else {
-                        replyText = "I couldn't find a random recipe at the moment.";
+                        replyText = t('chat.search_responses.error');
                     }
                 }
             }
             else if (type === 'area') {
-                // 1. Get List of Recipes for Area
                 const areaRecipes = await getRecipesByArea(query);
 
                 if (areaRecipes && areaRecipes.length > 0) {
-                    // 2. Pick a random one from the list or the first one
                     const randomIdx = Math.floor(Math.random() * Math.min(areaRecipes.length, 5));
                     const mealSummary = areaRecipes[randomIdx];
-
-                    // 3. Fetch Full Details (Ingredients, etc.)
                     recipe = await getRecipeById(mealSummary.idMeal);
 
                     if (recipe) {
-                        replyText = `Here is a popular ${query} dish for you:`;
+                        replyText = t('chat.search_responses.found_area', { area: query });
                     } else {
-                        replyText = `I found a ${query} dish: ${mealSummary.strMeal}, but couldn't load details.`;
+                        replyText = t('chat.search_responses.found_area', { area: query }) + ` (${mealSummary.strMeal})`;
                     }
                 } else {
-                    replyText = `I couldn't find any ${query} recipes.`;
+                    replyText = t('chat.search_responses.not_found', { query: query });
                 }
             }
             else {
-                // Standard Search via API if not found locally
-                // Check if it's a known indian dish name but not in our detailed list
+                // Standard Search via API
                 const isKnownIndian = knownDishNames.some(name => name.toLowerCase().includes(query.toLowerCase()));
-
-                // Perform API Search first to see if we get a result
                 const apiRecipes = await searchRecipes(query);
 
                 if (apiRecipes && apiRecipes.length > 0) {
                     recipe = apiRecipes[0];
                     if (isKnownIndian) {
-                        replyText = `Ah, ${query}! A classic Indian dish. Here is a recipe I found:`;
+                        replyText = t('chat.search_responses.found_api', { query: query });
                     } else {
-                        replyText = `I found a great match for "${query}":`;
+                        replyText = t('chat.search_responses.found_api', { query: query });
                     }
                 } else {
-                    // API returned nothing
                     if (isKnownIndian) {
-                        // We know it but API doesn't have it. Offer closest local Indian dish.
-                        const randomFallback = popularIndianDishes[Math.floor(Math.random() * 5)]; // Pick from top 5 popular
-                        replyText = `I know ${query} is a wonderful Indian dish, but I don't have the specific recipe right now. 😔\n\nHow about trying a classic ${randomFallback.strMeal} instead?`;
+                        const randomFallback = popularIndianDishes[Math.floor(Math.random() * 5)];
+                        replyText = t('chat.search_responses.not_found', { query: query }) + `\n\nHow about trying ${randomFallback.strMeal}?`;
                         recipe = randomFallback;
                     } else {
-                        replyText = `I couldn't find a recipe for "${query}". I only specialize in food and cooking!`;
+                        replyText = t('chat.search_responses.not_found', { query: query });
                     }
                 }
             }
@@ -142,7 +135,7 @@ const Chat = () => {
 
         } catch (error) {
             console.error('Search Error:', error);
-            addMessage("I'm having trouble connecting to the kitchen. Please try again later.", 'bot');
+            addMessage(t('chat.search_responses.error'), 'bot');
         } finally {
             setIsLoading(false);
         }
@@ -150,7 +143,14 @@ const Chat = () => {
 
     // Chip Click Handler
     const handleChipClick = (label, type) => {
-        const displayText = type === 'random' ? "Surprise me!" : `Show me ${label} food`;
+        // Translation keys for chip responses are tricky, mapping back label to key
+        // Simple map for this demo:
+        let displayKey;
+        if (type === 'random') displayKey = 'random';
+        else displayKey = label.toLowerCase();
+
+        const displayText = t(`chat.chip_responses.${displayKey}`, { defaultValue: `Show me ${label}` });
+
         addMessage(displayText, 'user');
         handleSearch(label, type);
     };
@@ -167,13 +167,10 @@ const Chat = () => {
         const lowerInput = userText.toLowerCase();
 
         // Greeting Handler
-        const greetings = ['hi', 'hello', 'hey', 'namaste', 'greetings', 'yo'];
-        // Check exact match or start
+        const greetings = ['hi', 'hello', 'hey', 'namaste', 'greetings', 'yo', 'hola'];
         if (greetings.some(g => lowerInput === g || lowerInput.startsWith(g + ' '))) {
-            const randomGreeting = indianGreetings[Math.floor(Math.random() * indianGreetings.length)];
-            // Simulate "typing" delay
             setTimeout(() => {
-                setMessages(prev => [...prev, { id: Date.now(), text: randomGreeting, sender: 'bot' }]);
+                setMessages(prev => [...prev, { id: Date.now(), text: t('chat.greeting'), sender: 'bot' }]);
             }, 600);
             return;
         }
@@ -187,7 +184,7 @@ const Chat = () => {
 
         if (nonFoodTriggers.some(trigger => lowerInput.includes(trigger))) {
             setTimeout(() => {
-                addMessage("I specialize only in culinary arts and recipes. Please ask me about food.", 'bot');
+                addMessage(t('chat.specialty_warning'), 'bot');
             }, 600);
             return;
         }
@@ -199,7 +196,7 @@ const Chat = () => {
         <div className="chat-container glass-card">
             <div className="chat-header">
                 <h1 className="chat-title" style={{ color: 'var(--primary)' }}>
-                    <ChefHat size={32} strokeWidth={2.5} /> COOKAi
+                    <ChefHat size={32} strokeWidth={2.5} /> {t('chat.title')}
                 </h1>
             </div>
 
@@ -225,22 +222,22 @@ const Chat = () => {
             {/* Suggestion Chips */}
             <div className="suggestion-chips">
                 <button className="chip" onClick={() => handleChipClick('Random', 'random')}>
-                    <Zap size={16} fill="currentColor" /> Random
+                    <Zap size={16} fill="currentColor" /> {t('chat.chips.random')}
                 </button>
                 <button className="chip" onClick={() => handleChipClick('Italian', 'area')}>
-                    <Utensils size={14} /> Italian
+                    <Utensils size={14} /> {t('chat.chips.italian')}
                 </button>
                 <button className="chip" onClick={() => handleChipClick('Chinese', 'area')}>
-                    <Utensils size={14} /> Chinese
+                    <Utensils size={14} /> {t('chat.chips.chinese')}
                 </button>
                 <button className="chip" onClick={() => handleChipClick('Indian', 'area')}>
-                    <Utensils size={14} /> Indian
+                    <Utensils size={14} /> {t('chat.chips.indian')}
                 </button>
                 <button className="chip" onClick={() => handleChipClick('Mexican', 'area')}>
-                    <Utensils size={14} /> Mexican
+                    <Utensils size={14} /> {t('chat.chips.mexican')}
                 </button>
                 <button className="chip" onClick={() => handleChipClick('Japanese', 'area')}>
-                    <Utensils size={14} /> Japanese
+                    <Utensils size={14} /> {t('chat.chips.japanese')}
                 </button>
             </div>
 
@@ -249,7 +246,7 @@ const Chat = () => {
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask for 'Biryani' or 'Butter Chicken'..."
+                    placeholder={t('chat.placeholder')}
                     disabled={isLoading}
                 />
                 <button type="submit" disabled={isLoading || !input.trim()}>

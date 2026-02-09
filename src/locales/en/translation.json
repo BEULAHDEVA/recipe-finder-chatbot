@@ -1,0 +1,47 @@
+{
+    "home": {
+        "title": "COOKAi",
+        "subtitle": "Your personal AI culinary genius.",
+        "feature1": "Discover exciting new recipes",
+        "feature2": "Find meals with ingredients you love",
+        "button": "Start Cooking"
+    },
+    "chat": {
+        "title": "COOKAi",
+        "placeholder": "Ask for a recipe...",
+        "send": "Send",
+        "greeting": "Namaste! 🙏 I am COOKAi, your personal chef with a special love for Indian cuisine! 🇮🇳 Ask me for a Biryani recipe, Butter Chicken, or anything else you crave.",
+        "specialty_warning": "I specialize only in culinary arts and recipes. Please ask me about food.",
+        "chips": {
+            "random": "Random",
+            "italian": "Italian",
+            "chinese": "Chinese",
+            "indian": "Indian",
+            "mexican": "Mexican",
+            "japanese": "Japanese"
+        },
+        "chip_responses": {
+            "random": "Surprise me!",
+            "italian": "Show me Italian food",
+            "chinese": "Show me Chinese food",
+            "indian": "Show me Indian food",
+            "mexican": "Show me Mexican food",
+            "japanese": "Show me Japanese food"
+        },
+        "search_responses": {
+            "found_local": "Ah, excellent choice! Here is my special recipe for {{meal}}:",
+            "found_random": "Here is a random culinary discovery for you.",
+            "found_area": "Here is a popular {{area}} dish for you:",
+            "found_api": "I found a great match for \"{{query}}\":",
+            "not_found": "I couldn't find a recipe for \"{{query}}\". I only specialize in food and cooking.",
+            "error": "I'm having trouble connecting to the kitchen. Please try again later."
+        }
+    },
+    "modal": {
+        "ingredients": "Ingredients",
+        "instructions": "Instructions",
+        "watch_video": "Watch on YouTube",
+        "view_source": "View Source",
+        "close": "Close"
+    }
+}
